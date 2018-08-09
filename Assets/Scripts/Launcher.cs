@@ -6,6 +6,10 @@ public class Launcher : Photon.PunBehaviour {
 
 
 #region PublicVariables
+[Tooltip("Панель отрубается после ввода имени, подключения и игры")]
+public GameObject controlPanel;
+[Tooltip("Панель информирует пользователя что подключение в процессе")]
+public GameObject progressLabel;
 public byte MaxPlayersPerRoom = 4;
 public PhotonLogLevel logLevel = PhotonLogLevel.Informational;
 #endregion
@@ -24,18 +28,30 @@ string _gameversion = "1";
 		PhotonNetwork.automaticallySyncScene = true;
 		PhotonNetwork.logLevel = logLevel;
 	}
-	// void Start() {
-	// 	Connect();
-	// }
+	void Start() {
+	 	progressLabel.SetActive(false);
+		 controlPanel.SetActive(true);
+	 }
 	
 
 	public void Connect(){
+
+        progressLabel.SetActive(true);
+		controlPanel.SetActive(false);
+
 		if(PhotonNetwork.connected){
         PhotonNetwork.JoinRandomRoom();
 		} 
 		else {
 			PhotonNetwork.ConnectUsingSettings(_gameversion);
 		}
+	}
+
+	public void DisConnect(){
+
+       
+        PhotonNetwork.Disconnect();
+		
 	}
 
 	#endregion
@@ -49,6 +65,8 @@ string _gameversion = "1";
 
 	public override void OnDisconnectedFromPhoton(){
 		Debug.LogWarning("OnDisconnetFromPhoton был вызван перезаписанным PUN");
+		progressLabel.SetActive(false);
+		 controlPanel.SetActive(true);
 	}
 
 	public override void OnPhotonJoinRoomFailed(object[] codeAndMsg){
